@@ -1,0 +1,14 @@
+#panorama {
+    width: 100%;
+    height: 100vh;
+}
+.pnlm-hotspot-base{
+    /* height: 26px;
+    width: 26px;
+    border-radius: 13px; */
+    background-color: #ffffff;
+}
+#controls{
+    margin-top: 5px;
+    margin-bottom: 5px;
+}

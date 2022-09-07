@@ -1,0 +1,37 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panorama Map Tool</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
+    <link rel="stylesheet" href="./style.css"/>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+
+    <div class="flex h-screen">
+        <div class="w-1/5 border-r-2 p-3">
+            <div class="flex">
+                <span>Images</span>
+                <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_addImage();">Add Image</button>
+            </div>
+            <div class="mt-2">
+                <ul id="image-list" class="list-none"></ul>
+            </div>
+            <div id="controls">
+                <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_getPayload()" type="button">Get Payload</button>
+                <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_enableHotspotClickEvent()" type="button">Add Hotspot</button>
+                <!-- <button onclick="javascript:_clearMouseEvent()" type="button">Clear Mouse Event</button> -->
+            </div>
+        </div>
+        <div class="w-4/5 bg-gray-400" id="panorama"></div>
+    </div>
+
+
+    
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+    <script type="text/javascript" src="./script.js"></script>
+</body>
+</html>
