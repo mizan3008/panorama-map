@@ -13,13 +13,14 @@
 
     <div class="flex h-screen">
         <div class="w-1/5 border-r-2 p-3">
-            <div class="flex">
+            <div id="content" class="flex">
                 <span>Images</span>
                 <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_addImage();">Add Image</button>
             </div>
             <div class="mt-2">
                 <ul id="image-list" class="list-none"></ul>
             </div>
+            <div id="hotspot-control"></div>
             <div id="controls">
                 <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_getPayload()" type="button">Get Payload</button>
                 <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_enableHotspotClickEvent()" type="button">Add Hotspot</button>
