@@ -23,16 +23,12 @@ function _getPayload()
         const toPayload = payload[index + 1] ?? payload[0]
         const fromPayload = payload[index - 1] ?? payload[payload.length - 1]
 
-        let toCoordinates = {
-            pitch: 0,
-            yaw: 0,
-            to: toPayload.name
-        }
-
-        let fromCoordinates = {
-            pitch: 0,
-            yaw: 0,
-            to: fromPayload.name
+        const myPayload = {
+            name: data.name,
+            type: data.type,
+            image: data.path,
+            pitch: data.pitch,
+            yaw: data.yaw,
         }
 
         const hotspots = data.hotspots ?? []
@@ -40,27 +36,23 @@ function _getPayload()
         if(hotspots.length > 0){
             hotspots.forEach((hotspot) => {
                 if(hotspot.id.search('from') !== -1){
-                    fromCoordinates.pitch = hotspot.pitch ?? 0
-                    fromCoordinates.yaw = hotspot.yaw ?? 0
+                    myPayload.fromCoordinates = {
+                        pitch: hotspot.pitch ?? 0,
+                        yaw: hotspot.yaw ?? 0,
+                        to: fromPayload.name
+                    }
                 }
                 if(hotspot.id.search('to') !== -1){
-                    toCoordinates.pitch = hotspot.pitch ?? 0
-                    toCoordinates.yaw = hotspot.yaw ?? 0
+                    myPayload.toCoordinates = {
+                        pitch: hotspot.pitch ?? 0,
+                        yaw: hotspot.yaw ?? 0,
+                        to: toPayload.name
+                    }
                 }
             })
         }
 
-        finalPayload.push(
-            {
-                name: data.name,
-                type: data.type,
-                image: data.path,
-                pitch: data.pitch,
-                yaw: data.yaw,
-                toCoordinates: toCoordinates,
-                fromCoordinates: fromCoordinates,
-            }
-        )
+        finalPayload.push(myPayload)
     })
 
     return finalPayload
