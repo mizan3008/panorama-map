@@ -60,7 +60,9 @@ function _getPayload()
 
 function _copy() {
 
-    const payload = _getPayload()
+    const payload = {
+        payload: _getPayload()
+    }
 
     const input = document.createElement('input');
     input.setAttribute('value', JSON.stringify(payload));
