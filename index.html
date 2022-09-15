@@ -13,9 +13,9 @@
 
     <div class="flex h-screen">
         <div class="w-1/5 border-r-2 p-3">
-            <div id="content" class="flex">
-                <span class="w-full">Images</span>
-                <button class="w-full bg-gray-400 p-1 text-sm rounded inline-flex items-center" onclick="javascript:_addImage();">
+            <div class="flex items-center justify-between">
+                <span>Images</span>
+                <button class="bg-gray-400 p-1 text-sm rounded inline-flex items-center" onclick="javascript:_addImage();">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>                  
@@ -47,20 +47,20 @@
     </div>
 
     <div class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center" id="previewModal">
-        <div class="relative w-auto my-6 mx-auto max-w-full h-screen">
+        <div class="relative w-auto mx-auto max-w-full h-screen">
           <!--content-->
           <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full h-full bg-white outline-none focus:outline-none">
             <!--header-->
-            <div class="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
+            <div class="flex items-start justify-between p-2 border-b border-solid border-slate-200 rounded-t">
               <h3 class="text-2xl font-semibold">
-                Modal Title
+                Preview
               </h3>
             </div>
             <!--body-->
-            <div id="panoramicPreview" class="relative p-6 flex-auto">
+            <div id="panoramicPreview" class="relative flex-auto">
             </div>
             <!--footer-->
-            <div class="flex items-center justify-end p-6 border-t border-solid border-slate-200 rounded-b">
+            <div class="flex items-center justify-end p-2 border-t border-solid border-slate-200 rounded-b">
               <button class="bg-gray-400 p-1 text-sm rounded" type="button" onclick="toggleModal()">
                 Close
               </button>
