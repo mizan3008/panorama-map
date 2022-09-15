@@ -25,6 +25,7 @@ function _getPayload()
 
         const myPayload = {
             name: data.name,
+            label: data.label ?? data.name ?? index,
             type: data.type,
             image: data.path,
             pitch: data.pitch,
@@ -151,6 +152,7 @@ function _addImage()
             if(path !== ""){
                 payload.push({
                     name: '',
+                    label: '',
                     type: 'unit',
                     path: path,
                     pitch: 0,
@@ -214,6 +216,12 @@ function _setName(e)
     activePayload.name = e.value
 }
 
+function _setLabel(e)
+{
+    const activePayload = payload[activeIndex]
+    activePayload.label = e.value
+}
+
 function _setType(e)
 {
     const activePayload = payload[activeIndex]
@@ -228,6 +236,7 @@ function _buildHotspotControl()
     const to_coordinate_id = activeIndex + "_to"
 
     const name = activePayload.name ?? ''
+    const label = activePayload.label ?? ''
 
     let html = ""
 
@@ -242,6 +251,13 @@ function _buildHotspotControl()
     html += "<div class='flex'>"
     html += "<div><input type='text' class='border-2 w-full' onkeyup='javascript:_setName(this);' name='name' value='"+name+"'/></div>"
     html += "<div><select class='border-2 h-full' onchange='javascript:_setType(this)'>"+typeOptionHtml+"</select></div>"
+    html += "</div>"
+    html += "</div>"
+
+    html += "<div class='mt-2'>"
+    html += "<label>Label</label>"
+    html += "<div>"
+    html += "<input type='text' class='border-2 w-full' onkeyup='javascript:_setLabel(this);' name='label' value='"+label+"'/>"
     html += "</div>"
     html += "</div>"
 
