@@ -25,7 +25,7 @@ function _getPayload()
 
         const myPayload = {
             name: data.name,
-            label: data.label ?? data.name ?? index,
+            label: data.label,
             type: data.type,
             image: data.path,
             pitch: data.pitch,
