@@ -14,8 +14,13 @@
     <div class="flex h-screen">
         <div class="w-1/5 border-r-2 p-3">
             <div id="content" class="flex">
-                <span>Images</span>
-                <button class="bg-gray-400 p-1 text-sm rounded" onclick="javascript:_addImage();">Add Image</button>
+                <span class="w-full">Images</span>
+                <button class="w-full bg-gray-400 p-1 text-sm rounded inline-flex items-center" onclick="javascript:_addImage();">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>                  
+                  &nbsp;Add Image
+                </button>
             </div>
             <div class="mt-2">
                 <ul id="image-list" class="list-none"></ul>
