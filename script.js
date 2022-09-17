@@ -3,89 +3,19 @@ window.onload = function() {
 }
 
 const state = {
-    payload: [
-        {
-            "id": 1,
-            "name": "501",
-            "label": "Entry",
-            "type": "unit",
-            "path": "https://d1bw6x5263wwbc.cloudfront.net/images/501/Entry.jpg",
-            "pitch": 0,
-            "yaw": 0,
-            "hotspots": []
-        },
-        {
-            "id": 2,
-            "name": "501_bed",
-            "label": "Bed1",
-            "type": "unit",
-            "path": "https://d1bw6x5263wwbc.cloudfront.net/images/501/Bed1.jpg",
-            "pitch": 0,
-            "yaw": 0,
-            "hotspots": []
-        }
-    ],
+    payload: [],
     activePayloadId: null,
     activeHotspotId: null,
-    lastId: 1
+    uniquePayloadId: 0
 }
 
-const images = []
-let activeIndex = null
-let hotspotId = null
 let viewer = null
 let previewer = null
-
-const hotspots = []
-
-const payload = []
 
 const typeList = ['Unit', 'Level', 'Block']
 
 function _getPayload()
 {
-    // const finalPayload = []
-
-    // state.payload.forEach((data, index) => {
-
-    //     // const toPayload = payload[index + 1] ?? payload[0]
-    //     // const fromPayload = payload[index - 1] ?? payload[payload.length - 1]
-
-    //     const myPayload = {
-    //         name: data.name,
-    //         label: data.label,
-    //         type: data.type,
-    //         image: data.path,
-    //         pitch: data.pitch,
-    //         yaw: data.yaw,
-    //     }
-
-    //     const hotspots = data.hotspots ?? []
-
-    //     if(hotspots.length > 0){
-    //         hotspots.forEach((hotspot) => {
-    //             if(hotspot.id.search('from') !== -1){
-    //                 myPayload.fromCoordinates = {
-    //                     pitch: hotspot.pitch ?? 0,
-    //                     yaw: hotspot.yaw ?? 0,
-    //                     to: data.name
-    //                 }
-    //             }
-    //             if(hotspot.id.search('to') !== -1){
-    //                 myPayload.toCoordinates = {
-    //                     pitch: hotspot.pitch ?? 0,
-    //                     yaw: hotspot.yaw ?? 0,
-    //                     to: data.name
-    //                 }
-    //             }
-    //         })
-    //     }
-
-    //     finalPayload.push(myPayload)
-    // })
-
-    // return finalPayload
-
     const payload = []
 
     if(state.payload.length > 0){
@@ -176,7 +106,8 @@ function _clickEvent(e)
         id: hotspotId.toString(),
         text: hotspotId.search('from') !== -1 ? 'From Coordinate' : 'To Coordinate',
         pitch: hotspotPayload[0],
-        yaw: hotspotPayload[1]
+        yaw: hotspotPayload[1],
+        to: '',
     }
 
     viewer.addHotSpot(data)
@@ -226,7 +157,7 @@ function _addImage()
                 const label = filename.replace(/\.[^/.]+$/, "")
 
                 const imageData = {
-                    id: state.lastId,
+                    id: _uniquePayloadId(),
                     name: '',
                     label: label,
                     type: 'unit',
@@ -237,28 +168,11 @@ function _addImage()
                 }
 
                 state.payload.push(imageData)
-
-                state.lastId += 1
             }
         })
 
-        // if(activeIndex === null){
-        //     activeIndex = 0
-        //     _loadPanoramicView(0)
-        // }
-
         _buildImageListMarkup()
-
-        // if(payload.length === 1){
-        //     _loadPanoramicView(0)
-        // }
     }
-}
-
-function _buildControlPanel()
-{
-    _buildImageListMarkup()
-    // _buildHotspotControl()
 }
 
 function _buildImageListMarkup()
@@ -292,7 +206,6 @@ function _buildHotspotImageListMarkup()
     
     if(state.payload.length > 0){
         state.payload.forEach((data) => {
-            // const activeClass = data.id === state.activePayloadId ? 'border-green-700' : ''
             html += "<a id='hotspot-image-"+data.id+"' href='javascript:_handleHotspotImageClick("+data.id+")' class='hotspot-images flex items-center justify-between border-2 p-1 mb-2'><div><img src='"+data.path+"' class='w-12 border-2'/></div><div class='mx-1'>"+data.name+" ["+data.label+"]</div></a>"
         })
     }
@@ -326,36 +239,42 @@ function _buildHotspotSettingsMarkup(id)
 
     const hotspots = payload.hotspots ?? []
 
-    let sceneOptionHtml = ""
-    state.payload.forEach((data) => {
-        let selected = ''//activePayload.type === type.toLocaleLowerCase() ? 'selected' : ''
-        sceneOptionHtml += "<option "+selected+" value='"+data.name+"'>"+data.name+"</option>"
-    })
-
-    if(hotspots.find((hotspot) => hotspot.id === toId) === undefined){
+    const toHotspot = hotspots.find((hotspot) => hotspot.id === toId)
+    if(toHotspot === undefined){
         html += "<div class='mb-1'><a class='bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center' href='javascript:_enableHotspotClickEvent(&#39;"+toId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 mr-2'><path stroke-linecap='round' stroke-linejoin='round' d='M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5' /></svg> Add to Hotspot</a></div>"
     }else{
-        html += "<div class='flex items-center justify-between border-2 p-1 mb-2'><label>To Hotspot</label> <select onchange='javascript:_setScene("+id+", &#39;"+toId+"&#39;, this)' class='bg-gray-200 h-full'>"+sceneOptionHtml+"</select> <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot("+id+", &#39;"+toId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></div>"
+        const sceneOptionHtml = _getScenesOptionList(toHotspot.to)
+        html += "<div class='flex items-center justify-between border-2 p-1 mb-2'><label>To Hotspot</label> <select onchange='javascript:_setScene("+id+", &#39;"+toId+"&#39;, this)' class='bg-gray-200 p-1'>"+sceneOptionHtml+"</select> <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot("+id+", &#39;"+toId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></div>"
     }
 
-    if(hotspots.find((hotspot) => hotspot.id === fromId) === undefined){
+    const fromHotspot = hotspots.find((hotspot) => hotspot.id === fromId)
+    if(fromHotspot === undefined){
         html += "<div class='mb-1'><a class='bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center' href='javascript:_enableHotspotClickEvent(&#39;"+fromId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 mr-2'><path stroke-linecap='round' stroke-linejoin='round' d='M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5' /></svg> Add from Hotspot</a></div>"        
     }else{
-        html += "<div class='flex items-center justify-between border-2 p-1 mb-2'><label>From Hotspot</label> <select onchange='javascript:_setScene("+id+", &#39;"+fromId+"&#39;, this)' class='bg-gray-200 h-full'>"+sceneOptionHtml+"</select> <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot("+id+", &#39;"+fromId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></div>"
+        const sceneOptionHtml = _getScenesOptionList(fromHotspot.to)
+        html += "<div class='flex items-center justify-between border-2 p-1 mb-2'><label>From Hotspot</label> <select onchange='javascript:_setScene("+id+", &#39;"+fromId+"&#39;, this)' class='bg-gray-200 p-1'>"+sceneOptionHtml+"</select> <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot("+id+", &#39;"+fromId+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></div>"
     }
 
     document.getElementById('hotspotControlPanel-hotspotSettings').innerHTML = html
 }
 
-function _removeImage(id)
+function _removeImage(payloadId)
 {
     const command = confirm("Are you sure, you want to remove this image?")
     if(command){
-        const index = state.payload.findIndex((data) => data.id === id)
+        const index = state.payload.findIndex((data) => data.id === payloadId)
         if(index >= 0){
             state.payload.splice(index, 1)
-            document.getElementById("image-"+id).remove()
-            if(state.payload.length === 0){
+            document.getElementById("image-"+payloadId).remove()
+
+            const payloadLength = state.payload.length
+
+            if(payloadLength > 0 && payloadId === state.activePayloadId){
+                state.activePayloadId = state.payload[0].id
+            }
+
+            if(payloadLength === 0){
+                state.activePayloadId = null
                 _buildImageListMarkup()
             }
         }
@@ -395,69 +314,10 @@ function _setScene(payloadId, hotspotId, element)
     }
 }
 
-function _buildHotspotControl()
-{
-    const activePayload = payload[activeIndex]
-
-    const from_coordinate_id = activeIndex + "_from"
-    const to_coordinate_id = activeIndex + "_to"
-
-    const name = activePayload.name ?? ''
-    const label = activePayload.label ?? ''
-
-    let html = ""
-
-    let typeOptionHtml = ""
-    typeList.forEach((type) => {
-        let selected = activePayload.type === type.toLocaleLowerCase() ? 'selected' : ''
-        typeOptionHtml += "<option "+selected+" value='"+type.toLocaleLowerCase()+"'>"+type+"</option>"
-    })
-
-    html += "<div class='mt-2'>"
-    html += "<label>Name</label>"
-    html += "<div class='flex'>"
-    html += "<div><input type='text' class='border-2 w-full' onkeyup='javascript:void(0);' name='name' value='"+name+"'/></div>"
-    html += "<div><select class='border-2 h-full' onchange='javascript:void(0)'>"+typeOptionHtml+"</select></div>"
-    html += "</div>"
-    html += "</div>"
-
-    html += "<div class='mt-2'>"
-    html += "<label>Label</label>"
-    html += "<div>"
-    html += "<input type='text' class='border-2 w-full' onkeyup='javascript:void(0);' name='label' value='"+label+"'/>"
-    html += "</div>"
-    html += "</div>"
-
-    html += "<div class='mt-2'>"
-    html += "<div>Hotspot</div>"
-    html += "<ul class='list-none'>"
-
-    const hotspots = activePayload.hotspots ?? []
-
-    if(hotspots.find((hotspot) => hotspot.id === to_coordinate_id) === undefined){
-        html += "<li class='mb-1'><a class='bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center' href='javascript:_enableHotspotClickEvent(&#39;"+to_coordinate_id+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 mr-2'><path stroke-linecap='round' stroke-linejoin='round' d='M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5' /></svg> Add to coordinate</a></li>"        
-    }else{
-        html += "<li class='border-2 flex items-center justify-between mb-1 p-1'>To coordinate <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot(&#39;"+to_coordinate_id+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></li>"
-    }
-
-    if(hotspots.find((hotspot) => hotspot.id === from_coordinate_id) === undefined){
-        html += "<li class='mb-1'><a class='bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center' href='javascript:_enableHotspotClickEvent(&#39;"+from_coordinate_id+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-6 h-6 mr-2'><path stroke-linecap='round' stroke-linejoin='round' d='M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zm-7.518-.267A8.25 8.25 0 1120.25 10.5M8.288 14.212A5.25 5.25 0 1117.25 10.5' /></svg> Add from coordinate</a></li>"        
-    }else{
-        html += "<li class='border-2 flex items-center justify-between mb-1 p-1'>From coordinate <a class='bg-red-600 p-1 text-sm rounded inline-flex items-center text-white' href='javascript:_removeHotspot(&#39;"+from_coordinate_id+"&#39;)'><svg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='1.5' stroke='currentColor' class='w-5 h-5'><path stroke-linecap='round' stroke-linejoin='round' d='M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0'/></svg></a></li>"
-    }
-
-    html += "</ul>"
-    html += "</div>"
-
-    document.getElementById('hotspot-control').innerHTML = html
-}
-
 function _loadPanoramicView(id)
 {
     state.activePayloadId = id
     const activePayload = _getPayloadById(id)
-
-    // _buildControlPanel()
 
     if(viewer){
         viewer.destroy()
@@ -537,11 +397,6 @@ function _next(step)
     if(_validate() === false){
         return false
     }
-    console.log(state)
-
-    // if(state.activePayloadId === null){
-    //     _loadPanoramicView(state.payload[0].id)
-    // }
 
     _buildHotspotImageListMarkup()
 
@@ -591,4 +446,21 @@ function _getPayloadById(id)
 {
     const payload = state.payload.find((p) => p.id === id)
     return payload ?? {}
+}
+
+function _uniquePayloadId()
+{
+    return state.uniquePayloadId += 1
+}
+
+function _getScenesOptionList(value = '')
+{
+    let html = "<option>-- Scenes --</option>"
+
+    state.payload.forEach((data) => {
+        const selected = data.name === value ? 'selected' : ''
+        html += "<option "+selected+" value='"+data.name+"'>"+data.name+"</option>"
+    })
+
+    return html
 }
