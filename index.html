@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panorama Map Tool</title>
+    <title>Panorama Mapping Tool</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css"/>
     <link rel="stylesheet" href="./style.css"/>
 
@@ -12,57 +12,90 @@
 <body>
 
     <div class="flex h-screen">
-        <div class="w-1/5 border-r-2 p-3">
-            <div class="flex items-center justify-between">
-                <span>Images</span>
-                <button class="bg-gray-400 p-1 text-sm rounded inline-flex items-center" onclick="javascript:_addImage();">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>                  
-                  &nbsp;Add Image
-                </button>
+        <div class="w-1/5 sm:w-2/6 border-r-2 p-3 overflow-auto">
+            <div class="steps" id="imageSetup">
+              <div class="mb-2 bg-gray-200 p-1">
+                <div class="flex items-center justify-between">
+                    <span>Images</span>
+                    <a class="bg-gray-400 p-1 text-sm rounded inline-flex items-center" href="javascript:_addImage();">
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      &nbsp;Add Image
+                    </a>
+                </div>
+              </div>
+              <div id="imageControlPanel"></div>
+              <div class="flex items-center justify-end">
+                <a id="nextStep" class="bg-gray-400 text-sm rounded p-1 pl-2 inline-flex items-center hidden" href="javascript:_next('hotspotSetup')">
+                  Next&nbsp;
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  </svg>
+                </a>
+              </div>
             </div>
-            <div class="mt-2">
-                <ul id="image-list" class="list-none"></ul>
-            </div>
-            <div id="hotspot-control"></div>
-            <div class="flex mt-2">
-                <!-- <button class="bg-pink-500 text-white active:bg-pink-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button" onclick="_preview('modal-id')"> -->
+            <div class="steps hidden" id="hotspotSetup">
+              <div class="mb-2 bg-gray-200 p-1">
+                <label>Hotspot Settings</label>
+                <div class="border-b-2"></div>
+              </div>
+              <div id="hotspotControlPanel">
+                <div id="hotspotControlPanel-imageList"></div>
+                <div id="hotspotControlPanel-hotspotSettings"></div>
+              </div>
+
+              <div class="border-b-2 my-2"></div>
+
+              <div class="flex items-center justify-between">
                 <button class="bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center mr-2" onclick="javascript:_preview()" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>                      
-                    &nbsp;Preview
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                  </svg>
+                  &nbsp;Preview
                 </button>
                 <button class="bg-gray-400 p-1 text-sm rounded w-full inline-flex items-center" onclick="javascript:_copy()" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 01-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 011.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 00-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 01-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 00-3.375-3.375h-1.5a1.125 1.125 0 01-1.125-1.125v-1.5a3.375 3.375 0 00-3.375-3.375H9.75" />
                     </svg>
                     &nbsp;Copy Payload
                 </button>
+              </div>
+
+              <div class="border-b-2 my-2"></div>
+
+              <div class="flex items-center justify-between">
+                <a class="bg-gray-400 text-sm rounded p-1  pr-2 inline-flex items-center" href="javascript:_back('imageSetup')">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  </svg>
+                  &nbsp;Back
+                </a>
+              </div>
             </div>
         </div>
-        <div class="w-4/5 bg-gray-400" id="panorama"></div>
+        <div class="w-4/5 sm:w-4/6 bg-gray-400" id="panorama"></div>
     </div>
 
     <div class="hidden overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none justify-center items-center" id="previewModal">
         <div class="relative w-auto mx-auto max-w-full h-screen">
-          <!--content-->
           <div class="border-0 rounded-lg shadow-lg relative flex flex-col w-full h-full bg-white outline-none focus:outline-none">
-            <!--header-->
             <div class="flex items-start justify-between p-2 border-b border-solid border-slate-200 rounded-t">
-              <h3 class="text-2xl font-semibold">
-                Preview
+              <h3 class="text-2xl font-semibold inline-flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+                &nbsp;Preview
               </h3>
             </div>
-            <!--body-->
             <div id="panoramicPreview" class="relative flex-auto">
             </div>
-            <!--footer-->
             <div class="flex items-center justify-end p-2 border-t border-solid border-slate-200 rounded-b">
-              <button class="bg-gray-400 p-1 text-sm rounded" type="button" onclick="toggleModal()">
-                Close
+              <button class="bg-gray-400 p-1 text-sm rounded inline-flex items-center" type="button" onclick="toggleModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>                
+                &nbsp;Close
               </button>
             </div>
           </div>
